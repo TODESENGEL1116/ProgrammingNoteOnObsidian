@@ -12,3 +12,10 @@
 6.close( )
 
 客户端
+1.socket( )
+
+2.connect( )
+
+5.recv( )/send( )
+
+6.close( )
