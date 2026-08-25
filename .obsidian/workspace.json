@@ -13,12 +13,22 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "NetworkProgramming.md",
+                "file": "NetworkProgramming/HTTP method.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "NetworkProgramming"
+              "title": "HTTP method"
+            }
+          },
+          {
+            "id": "76ecba7114ae1e40",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
             }
           }
         ]
@@ -55,7 +65,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#include",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -201,6 +211,9 @@
   },
   "active": "a36a5ef709ce30ab",
   "lastOpenFiles": [
-    "NetworkProgramming.md"
+    "NetworkProgramming",
+    "未命名.canvas",
+    "NetworkProgramming/HTTP method.md",
+    "2026-08-24.md"
   ]
 }
