@@ -50,7 +50,7 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "alphabetical",
+                "sortOrder": "byCreatedTimeReverse",
                 "autoReveal": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -212,8 +212,9 @@
   },
   "active": "a36a5ef709ce30ab",
   "lastOpenFiles": [
-    "NetworkProgramming/OSI七层模型.md",
+    "NetworkProgramming/POSIX Socket API 头文件（套接字编程基础头文件）.md",
     "NetworkProgramming/HTTP 方法.md",
+    "NetworkProgramming/OSI七层模型.md",
     "NetworkProgramming",
     "未命名.canvas",
     "2026-08-24.md"
