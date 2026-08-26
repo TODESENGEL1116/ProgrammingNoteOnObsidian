@@ -13,22 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "NetworkProgramming/POSIX Socket API 头文件（套接字编程基础头文件）.md",
+                "file": "NetworkProgramming/POSIX Socket API 头文件.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "POSIX Socket API 头文件（套接字编程基础头文件）"
-            }
-          },
-          {
-            "id": "76ecba7114ae1e40",
-            "type": "leaf",
-            "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "新标签页"
+              "title": "POSIX Socket API 头文件"
             }
           }
         ]
@@ -128,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "NetworkProgramming/POSIX Socket API 头文件（套接字编程基础头文件）.md",
+                "file": "NetworkProgramming/POSIX Socket API 头文件.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -212,9 +202,12 @@
   },
   "active": "a36a5ef709ce30ab",
   "lastOpenFiles": [
-    "NetworkProgramming/HTTP 方法.md",
-    "NetworkProgramming/POSIX Socket API 头文件（套接字编程基础头文件）.md",
+    "NetworkProgramming/Linux 网络编程移植到 Windows 的全面差异对照与适配指南.md",
+    "NetworkProgramming/POSIX Socket API 头文件.md",
     "NetworkProgramming/OSI七层模型.md",
+    "NetworkProgramming/HTTP 方法.md",
+    "未命名.md",
+    "未命名",
     "NetworkProgramming",
     "未命名.canvas",
     "2026-08-24.md"
