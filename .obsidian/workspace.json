@@ -20,8 +20,37 @@
               "icon": "lucide-file",
               "title": "POSIX Socket API 头文件"
             }
+          },
+          {
+            "id": "774fba612b1b5bff",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "基础操作/Linux 基础命令与用法全整理.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Linux 基础命令与用法全整理"
+            }
+          },
+          {
+            "id": "f7fc58ac2e4187db",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "NetworkProgramming/HTTP method（HTTP 方法）（3）.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "HTTP method（HTTP 方法）（3）"
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -200,14 +229,29 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "a36a5ef709ce30ab",
+  "active": "f7fc58ac2e4187db",
   "lastOpenFiles": [
-    "NetworkProgramming/Linux 网络编程移植到 Windows 的全面差异对照与适配指南.md",
+    "NetworkProgramming/HTTP method（HTTP 方法）（2）.md",
+    "NetworkProgramming/HTTP method（HTTP 方法）（1）.md",
+    "NetworkProgramming/HTTP method（HTTP 方法）（3）.md",
     "NetworkProgramming/POSIX Socket API 头文件.md",
     "NetworkProgramming/OSI七层模型.md",
-    "NetworkProgramming/HTTP 方法.md",
-    "未命名.md",
-    "未命名",
+    "基础操作/Linux 基础命令与用法全整理.md",
+    "基础操作/配置obsidan.md",
+    "基础操作/Git 基础高频命令与用法全整理.md",
+    "基础操作/Linux 常用命令速查表（精简版）.md",
+    "基础操作",
+    "Linux基础命令/文件与目录操作.md",
+    "Linux基础命令/文件查看与编辑.md",
+    "Linux基础命令/压缩与查找.md",
+    "Linux基础命令/网络相关.md",
+    "Linux基础命令/权限与用户.md",
+    "Linux基础命令.md",
+    "Linux基础命令",
+    "预处理指令和预处理宏/区分预处理指令和预处理宏.md",
+    "预处理指令和预处理宏/C 语言预处理指令与预处理宏 —— 完全手册.md",
+    "NetworkProgramming/Linux 网络编程移植到 Windows 的全面差异对照与适配指南.md",
+    "预处理指令和预处理宏",
     "NetworkProgramming",
     "未命名.canvas",
     "2026-08-24.md"
