@@ -1,322 +1,330 @@
 ### HTTP方法总览
 
-HTTP方法（也称HTTP动词）定义了客户端对服务器资源的操作意图，不同方法有明确的安全、幂等属性区分，以下是完整的方法说明及最简C语言示例（基于原始Socket实现，仅保留体现方法核心特点的代码，省略错误处理逻辑）。
+HTTP协议定义了9种标准请求方法，用于指定客户端对服务器资源的操作类型，核心作用如下：
+
+|方法|核心作用|关键特性|
+|---|---|---|
+|**GET**|获取指定资源的内容|安全、幂等、可缓存，参数通过URL传递|
+|**POST**|向服务器提交数据/创建新资源|非幂等，数据放在请求体中，适合敏感/大量数据|
+|**PUT**|全量替换指定资源（资源不存在时可创建）|幂等，需要提供完整的资源内容|
+|**PATCH**|部分修改指定资源的某个/某些字段|非幂等，只需要提供需要修改的内容|
+|**DELETE**|删除指定资源|幂等，多次删除结果一致|
+|**HEAD**|获取资源的元信息（响应头），不返回响应体|安全、幂等，常用于检查资源是否存在/获取文件大小|
+|**OPTIONS**|查询服务器支持的HTTP方法/跨域预检|安全、幂等，响应中包含`Allow`头列出支持的方法|
+|**TRACE**|回显服务器收到的原始请求，用于调试|存在安全风险，生产环境通常禁用|
+|**CONNECT**|建立客户端与目标服务器之间的隧道，常用于HTTPS代理|非幂等，代理场景专用|
 
 ---
 
+### C语言示例（所有代码监听8080端口，编译运行后浏览器访问`localhost:8080`即可测试）
+
 #### 1. GET：获取资源
 
-**作用**：从服务器读取指定资源，不修改服务器状态，是**安全、幂等**的方法，常用于页面请求、数据查询。
+最基础的方法，返回固定HTML内容。
 
 ```c
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 int main() {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server = {
-        .sin_family = AF_INET,
-        .sin_port = htons(80),
-        .sin_addr.s_addr = inet_addr("127.0.0.1")
-    };
-    connect(sock, (struct sockaddr*)&server, sizeof(server));
-    
-    // 构造GET请求：仅请求资源，无请求体
-    char req[] = "GET /index.html HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n";
-    send(sock, req, strlen(req), 0);
-    
-    char resp[1024] = {0};
-    recv(sock, resp, sizeof(resp)-1, 0);
-    printf("%s\n", resp);
-    close(sock);
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr = {.sin_family=AF_INET, .sin_port=htons(8080), .sin_addr.s_addr=INADDR_ANY};
+    bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
+    listen(server_fd, 3);
+    printf("GET Server running at http://localhost:8080\n");
+
+    while(1) {
+        int client = accept(server_fd, NULL, NULL);
+        char buf[1024] = {0};
+        read(client, buf, sizeof(buf));
+        printf("Received request:\n%s\n", buf);
+
+        const char* resp = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n<h1>GET: 这是获取到的资源内容</h1>";
+        write(client, resp, strlen(resp));
+        close(client);
+    }
     return 0;
 }
 ```
 
-#### 2. POST：提交数据/创建资源
+#### 2. POST：提交数据
 
-**作用**：向服务器提交数据，通常用于创建新资源、表单提交，**不幂等**，会修改服务器状态，数据放在请求体中。
+读取请求体中的数据并返回接收到的内容。
 
 ```c
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 int main() {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server = {
-        .sin_family = AF_INET,
-        .sin_port = htons(80),
-        .sin_addr.s_addr = inet_addr("127.0.0.1")
-    };
-    connect(sock, (struct sockaddr*)&server, sizeof(server));
-    
-    // 构造POST请求：携带请求体提交数据
-    const char* body = "username=test&password=123";
-    char req[1024];
-    snprintf(req, sizeof(req), 
-        "POST /api/login HTTP/1.1\r\n"
-        "Host: 127.0.0.1\r\n"
-        "Content-Type: application/x-www-form-urlencoded\r\n"
-        "Content-Length: %ld\r\n"
-        "Connection: close\r\n\r\n"
-        "%s", strlen(body), body);
-    send(sock, req, strlen(req), 0);
-    
-    char resp[1024] = {0};
-    recv(sock, resp, sizeof(resp)-1, 0);
-    printf("%s\n", resp);
-    close(sock);
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr = {.sin_family=AF_INET, .sin_port=htons(8080), .sin_addr.s_addr=INADDR_ANY};
+    bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
+    listen(server_fd, 3);
+    printf("POST Server running at http://localhost:8080\n");
+
+    while(1) {
+        int client = accept(server_fd, NULL, NULL);
+        char buf[4096] = {0};
+        read(client, buf, sizeof(buf));
+        printf("Received request:\n%s\n", buf);
+
+        // 提取请求体内容（简单按空行分割）
+        char* body = strstr(buf, "\r\n\r\n");
+        body = body ? body + 4 : "无请求体";
+
+        char resp[4096];
+        sprintf(resp, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>POST: 接收到的提交数据</h1><pre>%s</pre>", body);
+        write(client, resp, strlen(resp));
+        close(client);
+    }
     return 0;
 }
 ```
 
-#### 3. PUT：全量更新/替换资源
+#### 3. PUT：全量替换资源
 
-**作用**：用请求体的完整内容替换目标资源，若资源不存在则创建，**幂等**，需要提交完整的资源信息。
+接收完整的资源内容，返回替换成功的提示。
 
 ```c
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 int main() {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server = {
-        .sin_family = AF_INET,
-        .sin_port = htons(80),
-        .sin_addr.s_addr = inet_addr("127.0.0.1")
-    };
-    connect(sock, (struct sockaddr*)&server, sizeof(server));
-    
-    // 构造PUT请求：提交完整的资源数据做全量更新
-    const char* body = "{\"id\":1,\"name\":\"new_name\",\"age\":25}";
-    char req[1024];
-    snprintf(req, sizeof(req),
-        "PUT /api/users/1 HTTP/1.1\r\n"
-        "Host: 127.0.0.1\r\n"
-        "Content-Type: application/json\r\n"
-        "Content-Length: %ld\r\n"
-        "Connection: close\r\n\r\n"
-        "%s", strlen(body), body);
-    send(sock, req, strlen(req), 0);
-    
-    char resp[1024] = {0};
-    recv(sock, resp, sizeof(resp)-1, 0);
-    printf("%s\n", resp);
-    close(sock);
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr = {.sin_family=AF_INET, .sin_port=htons(8080), .sin_addr.s_addr=INADDR_ANY};
+    bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
+    listen(server_fd, 3);
+    printf("PUT Server running at http://localhost:8080\n");
+
+    while(1) {
+        int client = accept(server_fd, NULL, NULL);
+        char buf[4096] = {0};
+        read(client, buf, sizeof(buf));
+        printf("Received PUT request:\n%s\n", buf);
+
+        const char* resp = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>PUT: 资源已全量替换为提交的新内容</h1>";
+        write(client, resp, strlen(resp));
+        close(client);
+    }
     return 0;
 }
 ```
 
-#### 4. DELETE：删除资源
+#### 4. PATCH：部分修改资源
 
-**作用**：删除服务器指定的资源，**幂等**，多次请求效果相同，通常无请求体。
+只接收需要修改的字段，返回部分更新的提示。
 
 ```c
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 int main() {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server = {
-        .sin_family = AF_INET,
-        .sin_port = htons(80),
-        .sin_addr.s_addr = inet_addr("127.0.0.1")
-    };
-    connect(sock, (struct sockaddr*)&server, sizeof(server));
-    
-    // 构造DELETE请求：仅指定要删除的资源路径，无请求体
-    char req[] = "DELETE /api/users/1 HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n";
-    send(sock, req, strlen(req), 0);
-    
-    char resp[1024] = {0};
-    recv(sock, resp, sizeof(resp)-1, 0);
-    printf("%s\n", resp);
-    close(sock);
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr = {.sin_family=AF_INET, .sin_port=htons(8080), .sin_addr.s_addr=INADDR_ANY};
+    bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
+    listen(server_fd, 3);
+    printf("PATCH Server running at http://localhost:8080\n");
+
+    while(1) {
+        int client = accept(server_fd, NULL, NULL);
+        char buf[4096] = {0};
+        read(client, buf, sizeof(buf));
+        printf("Received PATCH request:\n%s\n", buf);
+
+        const char* resp = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>PATCH: 资源已部分修改指定字段</h1>";
+        write(client, resp, strlen(resp));
+        close(client);
+    }
     return 0;
 }
 ```
 
-#### 5. PATCH：部分更新资源
+#### 5. DELETE：删除资源
 
-**作用**：对资源做局部修改，仅提交需要变更的字段，节省带宽，**不强制幂等**。
+返回删除成功的提示。
 
 ```c
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 int main() {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server = {
-        .sin_family = AF_INET,
-        .sin_port = htons(80),
-        .sin_addr.s_addr = inet_addr("127.0.0.1")
-    };
-    connect(sock, (struct sockaddr*)&server, sizeof(server));
-    
-    // 构造PATCH请求：仅提交需要修改的部分字段
-    const char* body = "{\"age\":30}";
-    char req[1024];
-    snprintf(req, sizeof(req),
-        "PATCH /api/users/1 HTTP/1.1\r\n"
-        "Host: 127.0.0.1\r\n"
-        "Content-Type: application/json\r\n"
-        "Content-Length: %ld\r\n"
-        "Connection: close\r\n\r\n"
-        "%s", strlen(body), body);
-    send(sock, req, strlen(req), 0);
-    
-    char resp[1024] = {0};
-    recv(sock, resp, sizeof(resp)-1, 0);
-    printf("%s\n", resp);
-    close(sock);
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr = {.sin_family=AF_INET, .sin_port=htons(8080), .sin_addr.s_addr=INADDR_ANY};
+    bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
+    listen(server_fd, 3);
+    printf("DELETE Server running at http://localhost:8080\n");
+
+    while(1) {
+        int client = accept(server_fd, NULL, NULL);
+        char buf[1024] = {0};
+        read(client, buf, sizeof(buf));
+        printf("Received DELETE request:\n%s\n", buf);
+
+        const char* resp = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>DELETE: 指定资源已删除</h1>";
+        write(client, resp, strlen(resp));
+        close(client);
+    }
     return 0;
 }
 ```
 
-#### 6. HEAD：获取资源元信息
+#### 6. HEAD：只返回响应头
 
-**作用**：与GET请求逻辑一致，但服务器仅返回响应头，不返回响应体，用于检查资源是否存在、大小等，节省带宽。
+不返回响应体，只返回资源元信息（如Content-Length）。
 
 ```c
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 int main() {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server = {
-        .sin_family = AF_INET,
-        .sin_port = htons(80),
-        .sin_addr.s_addr = inet_addr("127.0.0.1")
-    };
-    connect(sock, (struct sockaddr*)&server, sizeof(server));
-    
-    // 构造HEAD请求：仅获取响应头，无响应体
-    char req[] = "HEAD /index.html HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n";
-    send(sock, req, strlen(req), 0);
-    
-    char resp[1024] = {0};
-    recv(sock, resp, sizeof(resp)-1, 0);
-    printf("%s\n", resp);
-    close(sock);
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr = {.sin_family=AF_INET, .sin_port=htons(8080), .sin_addr.s_addr=INADDR_ANY};
+    bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
+    listen(server_fd, 3);
+    printf("HEAD Server running at http://localhost:8080\n");
+
+    while(1) {
+        int client = accept(server_fd, NULL, NULL);
+        char buf[1024] = {0};
+        read(client, buf, sizeof(buf));
+        printf("Received HEAD request:\n%s\n", buf);
+
+        // 只返回响应头，无响应体
+        const char* resp = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 0\r\n\r\n";
+        write(client, resp, strlen(resp));
+        close(client);
+    }
     return 0;
 }
 ```
 
-#### 7. OPTIONS：查询服务器支持的请求方法
+#### 7. OPTIONS：查询支持的方法
 
-**作用**：获取目标资源支持的HTTP方法、跨域权限等通信选项，常用于CORS预检请求。
+返回`Allow`头列出服务器支持的所有HTTP方法。
 
 ```c
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 int main() {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server = {
-        .sin_family = AF_INET,
-        .sin_port = htons(80),
-        .sin_addr.s_addr = inet_addr("127.0.0.1")
-    };
-    connect(sock, (struct sockaddr*)&server, sizeof(server));
-    
-    // 构造OPTIONS请求：查询资源支持的HTTP方法
-    char req[] = "OPTIONS /api/users HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n";
-    send(sock, req, strlen(req), 0);
-    
-    char resp[1024] = {0};
-    recv(sock, resp, sizeof(resp)-1, 0);
-    printf("%s\n", resp);
-    close(sock);
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr = {.sin_family=AF_INET, .sin_port=htons(8080), .sin_addr.s_addr=INADDR_ANY};
+    bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
+    listen(server_fd, 3);
+    printf("OPTIONS Server running at http://localhost:8080\n");
+
+    while(1) {
+        int client = accept(server_fd, NULL, NULL);
+        char buf[1024] = {0};
+        read(client, buf, sizeof(buf));
+        printf("Received OPTIONS request:\n%s\n", buf);
+
+        const char* resp = "HTTP/1.1 200 OK\r\nAllow: GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\r\nContent-Length: 0\r\n\r\n";
+        write(client, resp, strlen(resp));
+        close(client);
+    }
     return 0;
 }
 ```
 
-#### 8. TRACE：回显请求内容
+#### 8. TRACE：回显原始请求
 
-**作用**：将客户端的请求原样回显，用于诊断网络链路问题，存在安全风险，生产环境通常禁用。
+将收到的完整请求内容原样返回，用于调试。
 
 ```c
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 int main() {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server = {
-        .sin_family = AF_INET,
-        .sin_port = htons(80),
-        .sin_addr.s_addr = inet_addr("127.0.0.1")
-    };
-    connect(sock, (struct sockaddr*)&server, sizeof(server));
-    
-    // 构造TRACE请求：服务器会原样回显该请求内容
-    char req[] = "TRACE / HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n";
-    send(sock, req, strlen(req), 0);
-    
-    char resp[1024] = {0};
-    recv(sock, resp, sizeof(resp)-1, 0);
-    printf("%s\n", resp);
-    close(sock);
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr = {.sin_family=AF_INET, .sin_port=htons(8080), .sin_addr.s_addr=INADDR_ANY};
+    bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
+    listen(server_fd, 3);
+    printf("TRACE Server running at http://localhost:8080\n");
+
+    while(1) {
+        int client = accept(server_fd, NULL, NULL);
+        char buf[4096] = {0};
+        read(client, buf, sizeof(buf));
+        printf("Received TRACE request:\n%s\n", buf);
+
+        // 原样回显请求内容
+        char resp[4096];
+        sprintf(resp, "HTTP/1.1 200 OK\r\nContent-Type: message/http\r\n\r\n%s", buf);
+        write(client, resp, strlen(resp));
+        close(client);
+    }
     return 0;
 }
 ```
 
 #### 9. CONNECT：建立隧道
 
-**作用**：与目标服务器建立透明隧道，常用于HTTPS代理场景，代理服务器会代为转发后续加密流量。
+返回隧道建立成功的提示（实际用于代理场景）。
 
 ```c
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 int main() {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    // 连接代理服务器端口（通常为8080）
-    struct sockaddr_in proxy = {
-        .sin_family = AF_INET,
-        .sin_port = htons(8080),
-        .sin_addr.s_addr = inet_addr("127.0.0.1")
-    };
-    connect(sock, (struct sockaddr*)&proxy, sizeof(proxy));
-    
-    // 构造CONNECT请求：请求建立到目标服务器的隧道
-    char req[] = "CONNECT www.example.com:443 HTTP/1.1\r\nHost: www.example.com:443\r\n\r\n";
-    send(sock, req, strlen(req), 0);
-    
-    char resp[1024] = {0};
-    recv(sock, resp, sizeof(resp)-1, 0);
-    printf("%s\n", resp);
-    close(sock);
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr = {.sin_family=AF_INET, .sin_port=htons(8080), .sin_addr.s_addr=INADDR_ANY};
+    bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
+    listen(server_fd, 3);
+    printf("CONNECT Server running at http://localhost:8080\n");
+
+    while(1) {
+        int client = accept(server_fd, NULL, NULL);
+        char buf[1024] = {0};
+        read(client, buf, sizeof(buf));
+        printf("Received CONNECT request:\n%s\n", buf);
+
+        const char* resp = "HTTP/1.1 200 Connection Established\r\n\r\n";
+        write(client, resp, strlen(resp));
+        close(client);
+    }
     return 0;
 }
 ```
 
 ---
 
-需要我帮你整理一份HTTP方法的安全性和幂等性对照表吗？实际开发中选型时很关键。
+### 测试说明
+
+- 编译所有代码：`gcc 文件名.c -o server`，运行：`./server`
+- GET/POST/PUT/PATCH/DELETE可直接用浏览器访问`http://localhost:8080`测试（POST/PUT/PATCH需要用curl或Postman发送带请求体的请求）
+- HEAD/OPTIONS/TRACE建议用curl测试：
+    - HEAD：`curl -I http://localhost:8080`
+    - OPTIONS：`curl -X OPTIONS http://localhost:8080`
+    - TRACE：`curl -X TRACE http://localhost:8080`
+
+---
+
+需要我把这9个方法整合到一个统一的服务器程序里，通过判断请求方法返回不同响应，方便你一次性测试所有方法吗？

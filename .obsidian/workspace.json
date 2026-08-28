@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "NetworkProgramming/HTTP method（HTTP 方法）（3）.md",
+                "file": "NetworkProgramming/POSIX Socket API 头文件.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "HTTP method（HTTP 方法）（3）"
+              "title": "POSIX Socket API 头文件"
             }
           }
         ],
@@ -231,9 +231,11 @@
   },
   "active": "f7fc58ac2e4187db",
   "lastOpenFiles": [
-    "NetworkProgramming/HTTP method（HTTP 方法）（2）.md",
-    "NetworkProgramming/HTTP method（HTTP 方法）（1）.md",
     "NetworkProgramming/HTTP method（HTTP 方法）（3）.md",
+    "NetworkProgramming/Socket 网络编程八大核心函数详解.md",
+    "NetworkProgramming/HTTP状态码.md",
+    "NetworkProgramming/HTTP method（HTTP 方法）（1）.md",
+    "NetworkProgramming/HTTP method（HTTP 方法）（2）.md",
     "NetworkProgramming/POSIX Socket API 头文件.md",
     "NetworkProgramming/OSI七层模型.md",
     "基础操作/Linux 基础命令与用法全整理.md",
