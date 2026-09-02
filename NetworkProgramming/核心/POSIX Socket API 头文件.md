@@ -34,28 +34,20 @@
 int main() {
     printf("%-15s | %-10s\n", "数据类型", "大小 (字节)");
     printf("------------------------------------\n");
-
     // 1. pid_t
     printf("%-15s | %-10zu\n", "pid_t", sizeof(pid_t));
-
     // 2. size_t
     printf("%-15s | %-10zu\n", "size_t", sizeof(size_t));
-
     // 3. ssize_t
     printf("%-15s | %-10zu\n", "ssize_t", sizeof(ssize_t));
-
     // 4. socklen_t
     printf("%-15s | %-10zu\n", "socklen_t", sizeof(socklen_t));
-
     // 5. sa_family_t
     printf("%-15s | %-10zu\n", "sa_family_t", sizeof(sa_family_t));
-
     // 6. uid_t
     printf("%-15s | %-10zu\n", "uid_t", sizeof(uid_t));
-
     // 7. gid_t
     printf("%-15s | %-10zu\n", "gid_t", sizeof(gid_t));
-
     // 8. off_t
     printf("%-15s | %-10zu\n", "off_t", sizeof(off_t));
 
@@ -63,7 +55,6 @@ int main() {
 }
 ```
 ```
-
 ### 预期输出（以 64 位 Linux 系统为例）
 
 在 64 位现代 Linux 系统中，输出通常如下：
@@ -80,7 +71,6 @@ uid_t           | 4
 gid_t           | 4         
 off_t           | 8         
 ```
-
 ### 关键点说明
 
 1. **`%zu` 格式符**：`sizeof` 运算符返回的类型是 `size_t`。在 C99 及更高版本中，必须使用 `%zu` 来安全地打印 `size_t` 类型的值。
