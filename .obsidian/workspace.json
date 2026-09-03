@@ -69,12 +69,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "基础知识/浮点数/IEEE 754 浮点数表示法详解.md",
+                "file": "基础知识/浮点数/四种常用进制之间的转换详解.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "IEEE 754 浮点数表示法详解"
+              "title": "四种常用进制之间的转换详解"
             }
           }
         ],
@@ -259,8 +259,8 @@
   },
   "active": "3371b5f246592435",
   "lastOpenFiles": [
-    "基础知识/浮点数/四种常用进制之间的转换详解.md",
     "基础知识/浮点数/IEEE 754 浮点数表示法详解.md",
+    "基础知识/浮点数/四种常用进制之间的转换详解.md",
     "NetworkProgramming/核心/POSIX Socket API 头文件.md",
     "预处理指令和预处理宏/C 语言预处理指令与预处理宏 —— 完全手册.md",
     "NetworkProgramming/HTTP method/HTTP method（HTTP 方法）（1）.md",
