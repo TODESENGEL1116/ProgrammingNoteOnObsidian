@@ -259,8 +259,9 @@
   },
   "active": "3371b5f246592435",
   "lastOpenFiles": [
-    "基础知识/浮点数/IEEE 754 浮点数表示法详解.md",
+    "基础知识/浮点数/深入解析软件浮点运算库：从IEEE 754标准到完整实现.md",
     "基础知识/浮点数/四种常用进制之间的转换详解.md",
+    "基础知识/浮点数/IEEE 754 浮点数表示法详解.md",
     "NetworkProgramming/核心/POSIX Socket API 头文件.md",
     "预处理指令和预处理宏/C 语言预处理指令与预处理宏 —— 完全手册.md",
     "NetworkProgramming/HTTP method/HTTP method（HTTP 方法）（1）.md",
@@ -289,7 +290,6 @@
     "NetworkProgramming/HTTP method",
     "基础操作/网络故障排查场景速查表.md",
     "基础操作/常用网络命令.md",
-    "基础操作/常用端口号整理.md",
     "未命名.canvas",
     "NetworkProgramming/HTTP报文",
     "基础操作",
