@@ -59,7 +59,14 @@ S EEEEEEEEEEE MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 
 ### 浮点数的数学表示
 
-一个规格化的浮点数可以表示为：$`value=(-1)^sign\times(1.mantissa)\times2^{exponent-bias}`$
+一个规格化的浮点数可以表示为：
+
+$$
+
+value=(-1)^sign\times(1.mantissa)\times2^{exponent-bias}
+
+$$
+
 
 其中单精度浮点数的偏置(bias)为127，双精度为1023。这种表示方法使得浮点数能够覆盖极大的动态范围，从极小的分数到极大的天文数字。
 
@@ -130,7 +137,14 @@ static const uint_fast8_t globalDetectTininess = tininess_afterRounding;
 - 如果两个可表示的值同样接近，选择最低有效位为偶数的那个
 
 数学表示为：
-$`\operatorname{round}(x) = \begin{cases} \lfloor x \rfloor & \text{if } x - \lfloor x \rfloor < 0.5 \\ \lceil x \rceil & \text{if } x - \lfloor x \rfloor > 0.5 \\ \text{even number} & \text{if } x - \lfloor x \rfloor = 0.5 \end{cases}`$
+
+
+$$
+
+\operatorname{round}(x) = \begin{cases} \lfloor x \rfloor & \text{if } x - \lfloor x \rfloor < 0.5 \\ \lceil x \rceil & \text{if } x - \lfloor x \rfloor > 0.5 \\ \text{even number} & \text{if } x - \lfloor x \rfloor = 0.5 \end{cases}
+
+$$
+
 ```
 // 示例：
 1.5 → 2.0  // 2是偶数
@@ -295,16 +309,21 @@ $$​
 
 对于单精度浮点数，最大可表示值为：
 
-(2−2−23)×2127≈3.4028235×1038
+$$
+(2-2^{-23})\times2^{127}\approx3.4028235\times10^{38}
+$$
+
 
 对于双精度浮点数，最大可表示值为：
 
-(2−2−52)×21023≈1.7976931348623157×10308
+$$
+(2-2^{-52})\times2^1023\approx1.7976931348623157\times10^{308}
+$$
 
 **上溢的具体场景：**
 
-- 两个很大的数相乘：如 1030×1030
-- 指数函数在输入很大时：如 e1000
+- 两个很大的数相乘：如 $`1.0\times10^{38}\times1.0\times10^{38}`$
+- 指数函数在输入很大时：如 $`e^{1000}`$
 - 累加操作超出表示范围
 - 迭代算法中的数值发散
 
@@ -322,16 +341,20 @@ $$​
 
 对于单精度浮点数，最小规约数为：
 
-2−126≈1.175494×10−38
+$$
+1.0\times2^{-126}\approx1.17549435\times10^{-38}
+$$
 
 对于双精度浮点数，最小规约数为：
 
-2−1022≈2.225074×10−308
+$$
+1.0\times2^{-1022}\approx2.2250738585072014\times10^{-308}
+$$
 
 **下溢的具体场景：**
 
-- 两个很小的数相乘：如 10−30×10−30
-- 除法中分母很大：如 1/1040
+- 两个很小的数相乘：如 $`1.0\times10^{-38}\times1.0\times10^{-38}`$
+- 除法中分母很大：如 $`1.0\times10^{-38}\times1.0\times10^{-38}`$
 - 逐渐衰减的过程：如迭代计算中的连续缩放
 - 概率计算中的小概率事件
 
@@ -359,18 +382,22 @@ $$​
 1. **特殊值检查**：处理NaN、无穷大等特殊情况
 2. **指数对齐**：将较小数的指数调整到与较大数相同
 3. **尾数相加**：对齐后的尾数相加
-4. **结果规格化**：确保尾数在[1, 2)范围内
+4. **结果规格化**：确保尾数在$`[1,2)`$范围内
 5. **舍入处理**：根据舍入模式调整结果
 6. **异常检测**：检查上溢、下溢等情况
 
 ### 数学表示
 
-设有两个浮点数 A=(−1)SA​×(1.MA​)×2EA​ 和 B=(−1)SB​×(1.MB​)×2EB​，假设 EA​≥EB​，则加法过程为：
+设有两个浮点数 $`a = (-1)^{s_a} \cdot m_a \cdot 2^{e_a}$` 和 $b = (-1)^{s_b} \cdot m_b \cdot 2^{e_b}$，假设 $`e_a \ge e_b`$，则加法过程为：
 
-1. 对齐指数：B′=(−1)SB​×(1.MB​)×2EA​=(−1)SB​×(1.MB​×2EB​−EA​)×2EA​
-2. 尾数相加：(1.MZ​)=(1.MA​)+(−1)SA​⊕SB​×(1.MB​×2EB​−EA​)
-3. 规格化：找到 shift 使得 1≤(1.MZ​)×2shift<2
-4. 调整指数：EZ​=EA​−shift
+1. 对齐指数：$`m_b' = m_b \cdot 2^{e_b - e_a}`$
+
+2. 尾数相加：$`m_r = m_a + (-1)^{s_a \oplus s_b} \cdot m_b'`$
+
+3. 规格化：找到 $`k'$ 使得 $`1\le |m_r \cdot 2^{-k}| < 2`$
+
+4. 调整指数：$`e_r = e_a + k`$ 
+
 5. 舍入：应用舍入模式得到最终结果
 
 ### 核心实现代码
@@ -459,11 +486,14 @@ if (expA == 0xFF) {
 
 ### 数学表示
 
-设有两个浮点数 A=(−1)SA​×(1.MA​)×2EA​ 和 B=(−1)SB​×(1.MB​)×2EB​，则它们的乘积为：
+设有两个浮点数 $`a = (-1)^{s_a} \cdot m_a \cdot 2^{e_a}`$ 和 $`b = (-1)^{s_b} \cdot m_b \cdot 2^{e_b}`$，则它们的乘积为：
 
-A×B=(−1)SA​⊕SB​×(1.MA​×1.MB​)×2EA​+EB​
+$$
+a \times b = (-1)^{s_a \oplus s_b} \cdot (m_a \cdot m_b) \cdot 2^{e_a + e_b}
+$$
 
-由于 (1.MA​×1.MB​) 可能 ≥2，所以 EA​+EB​ 需要调整，需要进行规格化处理。
+由于 $`1 \le m_a, m_b < 2`$，所以 $`1 \le m_a \cdot m_b < 4`$，需要进行规格化处理。
+
 
 ### 核心实现
 
@@ -532,9 +562,11 @@ uint_fast32_t sigZ = (uint_fast32_t)(sig64 >> 29);  // 保留适当精度
 
 ### 数学原理
 
-除法 A/B 可以通过计算 A×(1/B) 来实现。计算倒数 1/B 通常使用牛顿迭代法：
+除法 $`a/b`$ 可以通过计算 $`a\times(1/b)`$来实现。计算倒数$`1/b`$ 通常使用牛顿迭代法：
 
-xn+1​=xn​×(2−B×xn​)
+$$
+x_{n+1}=x_n(2-b\times x_n)
+$$
 
 这个公式平方收敛，通常几次迭代就能达到所需精度。
 
@@ -593,7 +625,9 @@ static uint32_t softfloat_approxRecip32_1(uint32_t a)
 
 指数函数使用查表结合多项式逼近的方法。指数函数的泰勒展开为：
 
-ex=n=0∑∞​n!xn​
+$$
+e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \frac{x^4}{4!} + \cdots
+$$
 
 在实际实现中，我们使用经过优化的多项式逼近。
 
@@ -626,7 +660,10 @@ static float32_t f32_exp(float32_t x)
 
 对数函数同样使用查表加多项式逼近。自然对数的泰勒展开为：
 
-ln(1+x)=x−2x2​+3x3​−4x4​+⋯
+$$
+e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \frac{x^4}{4!} + \cdots
+$$
+
 
 ```
 static float32_t f32_log(float32_t x)
@@ -656,7 +693,9 @@ static float32_t f32_log(float32_t x)
 
 三角函数使用参数缩减结合多项式逼近。正弦函数的泰勒展开为：
 
-sin(x)=x−3!x3​+5!x5​−7!x7​+⋯
+$$
+sin(x)=x-\frac{x^3}{3!}+ \frac{x^5}{5!} - \frac{x^7}{7!} + \cdots
+$$
 
 ```
 static float64_t f64_sin(float64_t x)
@@ -740,7 +779,9 @@ static const uint64_t expTab[] = {
 
 快速计算前导零数量对于规格化至关重要。前导零的数量 count 与规格化移位的关系为：
 
-normalized_sig=sig≪count
+$$
+m_normailzed=m\times2^k
+$$
 
 ```
 static uint_fast8_t softfloat_countLeadingZeros32(uint32_t a)
