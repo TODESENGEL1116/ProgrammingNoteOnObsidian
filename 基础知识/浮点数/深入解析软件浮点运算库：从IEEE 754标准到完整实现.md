@@ -62,9 +62,7 @@ S EEEEEEEEEEE MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 一个规格化的浮点数可以表示为：
 
 $$
-
 value=(-1)^sign\times(1.mantissa)\times2^{exponent-bias}
-
 $$
 
 
@@ -140,9 +138,7 @@ static const uint_fast8_t globalDetectTininess = tininess_afterRounding;
 
 
 $$
-
 \operatorname{round}(x) = \begin{cases} \lfloor x \rfloor & \text{if } x - \lfloor x \rfloor < 0.5 \\ \lceil x \rceil & \text{if } x - \lfloor x \rfloor > 0.5 \\ \text{even number} & \text{if } x - \lfloor x \rfloor = 0.5 \end{cases}
-
 $$
 
 ```
