@@ -1,0 +1,82 @@
+/* 仅对声明了 resume 类的笔记生效 */
+.markdown-preview-view.resume {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #000;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 居中大标题 */
+.markdown-preview-view.resume h1 {
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+/* 英文副标题（h1后的第一个段落） */
+.markdown-preview-view.resume h1 + p {
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 0;
+    text-transform: uppercase;
+}
+
+/* 板块标题（h3） */
+.markdown-preview-view.resume h3 {
+    border-bottom: 1.5px solid #222;
+    padding-bottom: 5px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* 分隔线 */
+.markdown-preview-view.resume hr {
+    border: none;
+    border-top: 1.5px solid #222;
+    margin: 20px 0;
+}
+
+/* 表格去边框 */
+.markdown-preview-view.resume table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+.markdown-preview-view.resume td {
+    border: none !important;
+    padding: 5px 0;
+}
+
+/* 表格行底部细线 */
+.markdown-preview-view.resume tr {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+/* 项目列表 */
+.markdown-preview-view.resume ol {
+    padding-left: 20px;
+}
+
+.markdown-preview-view.resume ol li {
+    margin-bottom: 15px;
+}
+
+/* 链接颜色 */
+.markdown-preview-view.resume a {
+    color: #0366d6;
+    text-decoration: none;
+}
+
+/* 打印/导出PDF优化 */
+@media print {
+    .markdown-preview-view.resume {
+        max-width: 100%;
+    }
+    .markdown-preview-view.resume h3 {
+        page-break-after: avoid;
+    }
+}
