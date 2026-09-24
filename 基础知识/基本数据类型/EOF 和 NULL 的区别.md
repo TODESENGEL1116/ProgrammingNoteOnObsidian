@@ -144,7 +144,3 @@ while (fgets(buf, sizeof buf, fp) != NULL) { ... }  // NULL 是指针
 ### 六、记忆口诀
 
 > **读到的是值，值不对给 EOF；拿到的是地址，地址无效给 NULL。** `getchar` 看 EOF，`fgets/fopen/malloc` 看 NULL；`char` 别接 `getchar`，`feof` 别当循环条件。
-
----
-
-要不要我出几道易混淆的选择题，帮你把 EOF 和 NULL 的边界再巩固一下？
