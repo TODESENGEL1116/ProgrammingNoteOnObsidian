@@ -83,12 +83,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "未命名.md",
-                "mode": "preview",
-                "source": true
+                "file": "基础知识/HTML标签整理.md",
+                "mode": "source",
+                "source": false
               },
               "icon": "lucide-file",
-              "title": "未命名"
+              "title": "HTML标签整理"
             }
           }
         ],
@@ -247,8 +247,8 @@
             "state": {
               "type": "git-history-view",
               "state": {},
-              "icon": "history",
-              "title": "History"
+              "icon": "lucide-ghost",
+              "title": "git-history-view"
             }
           }
         ],
@@ -273,9 +273,10 @@
   },
   "active": "3493904627ce93b4",
   "lastOpenFiles": [
+    "未命名.md",
+    "基础知识/HTML标签整理.md",
     "Lu.jpg",
     "Pasted image 20261005073114.png",
-    "未命名.md",
     "NetworkProgramming/Web通信机制（HTTP通信体系）/session.md",
     "NetworkProgramming/HTTP报文/HTTP报文的组成（2）.md",
     "NetworkProgramming/Web通信机制（HTTP通信体系）/域名与IP地址的关系.md",
